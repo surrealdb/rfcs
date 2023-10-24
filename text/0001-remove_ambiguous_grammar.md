@@ -6,7 +6,7 @@ Owner: Mees Delzenne
 Last edited time: October 11, 2023 3:56 PM
 tag: SurrealQL
 
-### 1. Summary
+# 1. Summary
 
 The current version of SurrealQL grammar, as defined by what the parser currently accepts, contains several ambiguous productions. These productions are parsed differently depending on the context or can seem very similar to each other, but subtle differences can result in completely different semantics.
 
@@ -20,7 +20,7 @@ This RFC proposes several changes to the grammar to limit the present ambiguity:
 - Introduce a syntax error for block record-id object ambiguity
 - Change the KNN operator from `<3>` to `knn<3>` or similar
 
-#### Glossary
+## Glossary
 
 - Production: A branch or leaf of the parse tree.
 - Identifier: Names used in code which don't belong to the structure of a statement.
@@ -30,11 +30,11 @@ This RFC proposes several changes to the grammar to limit the present ambiguity:
 - Surrounded Identifier: An identifier which is surrounded by a delimiter, allowing otherwise disallowed identifiers to be used. Example: ``foo\\nbar``
 - Strand: A string like production i.e. something like `"hello world"`
 
-### 2. Motivation
+# 2. Motivation
 
 What motivates this proposal and why is it important?
 
-#### Context
+## Context
 
 The first implementation of the SurrealQL parser was implemented in Nom. Nom is a useful library for building a parser; however, its flexibility can also be a downside. Nom functions combine to form a tree of smaller sub-parsers, which together define a full parser. In Nom, whenever the grammar to be parsed contains a branch, Nom decides which branch to follow by taking whichever branch first parses without error. For example, see the following source code:
 
@@ -57,7 +57,7 @@ This ability to backup and try again allows one to produce quite powerful parser
 
 SurrealQL was build with this parser and the flexibility of the parser can be noticed in the current flexibility of the language. The SurrealQL grammer uses backup to define a grammar which has ambiguity which is only resolved by the order by which the parser parses a production.
 
-#### Flexibility vs Clear semantic meaning.
+## Flexibility vs Clear semantic meaning.
 
 The current grammar flexibility does allow for a more expressive syntax: more code will parse without errors, and you will often need fewer characters to write a query than if the language were more rigid.
 
@@ -101,13 +101,13 @@ In the above query the field `10dec` will be updated to the value "a value" if t
 
 More examples of these types of confusing grammar can probably be found.
 
-#### Hard to specify
+## Hard to specify
 
 As we are working towards a production ready database we should probably eventually create an official specification for the SurrealQL language. Most languages are either Context-Free or almost Context-Free and therefore allow specifying the grammar in Context-Free grammar. See for example the JavaScript spec: [https://tc39.es/ecma262/#prod-Statement](https://tc39.es/ecma262/#prod-Statement)
 
 The current ambiguities in the language make it impossible to specify a grammar for SurrealQL in the same way.
 
-#### Extendibility
+## Extendibility
 
 Because a lot of the current syntax is defined in part by the failure to parse other productions, productions which today are parsed one why could in the future silently change to have a completely different semantic meaning.
 
@@ -119,9 +119,9 @@ SELECT count FROM table GROUP count
 
 Currently the values from this select will be grouped by the field key. But where we to every introduce some feature which would require the `COUNT` keyword after `GROUP` then this code will quietly change meaning.
 
-### 3. Proposal
+# 3. Proposal
 
-#### Location specific reserved words.
+## Location specific reserved words.
 
 The first change proposed is to disallow raw identifiers in places where the same identifier could also be parsed as a keyword. For example, the following code would no longer be allowed:
 
@@ -145,11 +145,11 @@ The part after `FROM` can also have statements, however the USE statement is dis
 
 This change would completely remove existing ambiguity wherever an expression could possibly be parsed as a statement. It would simplify the parser a great deal. This changes also does not require that raw identifiers are completely distinct.
 
-#### Disallow raw identifiers to start with a digit
+## Disallow raw identifiers to start with a digit
 
 This is a common way to distinguish between a digit and number. By disallowing the first character from being a digit we can be sure that Identifiers aren’t numbers. This would resolve the same text from being used as an identifier or a number depending on the place in the grammar.
 
-#### Introduce strand prefixes
+## Introduce strand prefixes
 
 The only way can currently be distinguished is if one strand fails to parse as any of the other types. This can lead to problems where a use wanted a certain value to be a plain strand but it happened to match another type of strand and is thus converted into that specific type.
 
@@ -161,7 +161,7 @@ I propose we introduce specific strand prefixes for specific strand types:
 - `u'7c3f4ce8-83c4-458f-b1d7-b28352dea93c'` for UUID’s
 - `r"5:00"` for record id strings
 
-#### Syntax Error for Block-RecordId Object ambiguity
+## Syntax Error for Block-RecordId Object ambiguity
 
 The following statement is ambiguous:
 
@@ -173,31 +173,31 @@ This can be parsed either as an object with a field `a` and value `b.c`, or as a
 
 Therefore, I propose that if the parser encounters `{` `Identifier` `:`, it raises a syntax error to notify the user of the ambiguity. The user would then need to either use a record ID strand if they intended to create a block, or make the identifier a strand if they intended to create an object.
 
-#### 4. Drawbacks
+# 4. Drawbacks
 
 - Some statements now require the use of ` where they previously didn’t
 
-#### 5. Alternatives
+# 5. Alternatives
 
-### Limited reserved word list
+## Limited reserved word list
 
 Instead of location specific keywords we could instead specify a limited list of keywords which are disallowed. Keywords which can't start a statement like `EVENT` or `TABLE` would still be allowed, but `USE` would be disallowed everywhere.
 
 This would probably be easier to communicate then location specific keywords
 
-#### 6. Potential Impacts
+# 6. Potential Impacts
 
 The proposed changes are breaking changes. They will probably break existing code, if a limited set. As we have guaranteed stability it introducing these changes as the default would require releasing a new major version. Therefore I propose that the new parser will implement this syntax and introduce the new parser as a new experimental feature which in the future will possibly become the default.
 
-#### 7. Unresolved Questions
+# 7. Unresolved Questions
 
 - What do we change the KNN operator to.
 
-### 8. Conclusion
+# 8. Conclusion
 
 Here we briefly outline why this is the right decision to make at this time, and move forward!
 
-### Addendum: List of ambiguities
+## Addendum: List of ambiguities
 
 The following is a list of ambiguous SurrealQL statements I encountered. Some of these are solved by the current proposal. Some will still remain.
 
