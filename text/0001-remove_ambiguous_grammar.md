@@ -170,7 +170,9 @@ Therefore, I propose that if the parser encounters `{` `Identifier` `:`, it rais
 
 # 4. Drawbacks
 
-- Some statements now require the use of ` where they previously didn’t
+- Some queries now require more type and syntax than they previously did.
+- These changes break existing code.
+- These new changes could be more difficuly to learn initially as it introduces more syntax rules to remember.
 
 # 5. Alternatives
 
@@ -186,16 +188,23 @@ The proposed changes are breaking changes. They will probably break existing cod
 
 # 7. Unresolved Questions
 
-- What do we change the KNN operator to?
-- How do we differentiate an plain object from a geometry object?
+## What do we change the KNN operator to?
 
-# 8. Conclusion
+The `knn<3>` operator seems a bit verbose and rather complex looking for an operator. 
+Is this the right syntax.
 
-Here we briefly outline why this is the right decision to make at this time, and move forward!
+## How do we differentiate an plain object from a geometry object?
+
+Geometry objects look exactly like plain objects but are handled differently internally.
+There are operations which are possible on a plain object which you cant do on a geometry object, like, for example, adding a new field.
+Should we resolve this in the syntax itself by assigning different syntax to geometry objects or 
+should we instead allow geometry objects to behave like a strict super type of plain objects, 
+i.e. making sure all operations which are allowed normal objects are also allowed on geometry objects?
 
 ## Addendum: List of ambiguities
 
-The following is a list of ambiguous SurrealQL statements I encountered. Some of these are solved by the current proposal. Some will still remain.
+The following is a (uncomplete) list of ambiguous SurrealQL statements 
+that currently exist in the syntax.
 
 - KNN operator VS relation operator.
 
@@ -227,4 +236,9 @@ a = b
 
 ```sql
 CREATE foo SET before = 3 RETURN before
+```
+
+- Geometry or Object
+```sql
+{ kind: "LineString", coordinates; [1,2,3,4] }
 ```
