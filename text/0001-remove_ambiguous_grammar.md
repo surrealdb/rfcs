@@ -1,10 +1,14 @@
 # SurrealQL: Remove ambiguity in grammar
 
-Status: Open for suggestion
-Creator: Mees Delzenne
-Owner: Mees Delzenne
-Last edited time: October 11, 2023 3:56 PM
-tag: SurrealQL
+## Glossary
+
+- Production: A branch or leaf of the parse tree.
+- Identifier: Names used in code which don't belong to the structure of a statement.
+- Raw Identifier: A identifier without being surrounded by ` or `⟨ ⟩`
+- Keyword: Any identifier like production which belongs to the structure of a statement.
+- Reserved word: A keyword which can’t be used as a identifier.
+- Surrounded Identifier: An identifier which is surrounded by a delimiter, allowing otherwise disallowed identifiers to be used. Example: ``foo\\nbar``
+- Strand: A string like production i.e. something like `"hello world"`
 
 # 1. Summary
 
@@ -20,15 +24,6 @@ This RFC proposes several changes to the grammar to limit the present ambiguity:
 - Introduce a syntax error for block record-id object ambiguity
 - Change the KNN operator from `<3>` to `knn<3>` or similar
 
-## Glossary
-
-- Production: A branch or leaf of the parse tree.
-- Identifier: Names used in code which don't belong to the structure of a statement.
-- Raw Identifier: A identifier without being surrounded by ` or `⟨ ⟩`
-- Keyword: Any identifier like production which belongs to the structure of a statement.
-- Reserved word: A keyword which can’t be used as a identifier.
-- Surrounded Identifier: An identifier which is surrounded by a delimiter, allowing otherwise disallowed identifiers to be used. Example: ``foo\\nbar``
-- Strand: A string like production i.e. something like `"hello world"`
 
 # 2. Motivation
 
@@ -191,7 +186,8 @@ The proposed changes are breaking changes. They will probably break existing cod
 
 # 7. Unresolved Questions
 
-- What do we change the KNN operator to.
+- What do we change the KNN operator to?
+- How do we differentiate an plain object from a geometry object?
 
 # 8. Conclusion
 
