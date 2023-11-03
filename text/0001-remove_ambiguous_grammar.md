@@ -4,10 +4,10 @@
 
 - Production: A branch or leaf of the parse tree.
 - Identifier: Names used in code which don't belong to the structure of a statement.
-- Raw Identifier: A identifier without being surrounded by ` or `⟨ ⟩`
+- Raw Identifier: A identifier without being surrounded by \` or `⟨ ⟩`
 - Keyword: Any identifier like production which belongs to the structure of a statement.
 - Reserved word: A keyword which can’t be used as a identifier.
-- Surrounded Identifier: An identifier which is surrounded by a delimiter, allowing otherwise disallowed identifiers to be used. Example: ``foo\\nbar``
+- Surrounded Identifier: An identifier which is surrounded by a delimiter, allowing otherwise disallowed identifiers to be used. Example: `` `foo\nbar` ``
 - Strand: A string like production i.e. something like `"hello world"`
 
 # 1. Summary
@@ -195,7 +195,23 @@ Is this the right syntax.
 
 ## How do we differentiate an plain object from a geometry object?
 
-Geometry objects look exactly like plain objects but are handled differently internally.
+Geometry objects are objects which have a very specific layout. The following query returns one kind of geometry object.
+```sql
+RETURN { 
+    type: 'LineString',
+    coordinates: [1,2,3,4]
+}
+```
+As you can see it looks exactly like an normal object but if you change even a small part like for example:
+```sql
+RETURN { 
+    type: 'LinesString',
+    coordinates: [1,2,3,4]
+}
+```
+(`Lines` instead of `Line`) it is suddenly a plain object and no longer a geometry.
+
+Even though geometry objects look exactly like plain objects they are handled differently internally.
 There are operations which are possible on a plain object which you cant do on a geometry object, like, for example, adding a new field.
 Should we resolve this in the syntax itself by assigning different syntax to geometry objects or 
 should we instead allow geometry objects to behave like a strict super type of plain objects, 
