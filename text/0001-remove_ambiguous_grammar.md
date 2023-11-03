@@ -27,8 +27,6 @@ This RFC proposes several changes to the grammar to limit the present ambiguity:
 
 # 2. Motivation
 
-What motivates this proposal and why is it important?
-
 ## Context
 
 The first implementation of the SurrealQL parser was implemented in Nom. Nom is a useful library for building a parser; however, its flexibility can also be a downside. Nom functions combine to form a tree of smaller sub-parsers, which together define a full parser. In Nom, whenever the grammar to be parsed contains a branch, Nom decides which branch to follow by taking whichever branch first parses without error. For example, see the following source code:
