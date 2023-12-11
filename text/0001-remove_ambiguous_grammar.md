@@ -110,7 +110,7 @@ Consider the following query:
 SELECT count FROM table GROUP count
 ```
 
-Currently the values from this select will be grouped by the field key. But where we to every introduce some feature which would require the `COUNT` keyword after `GROUP` then this code will quietly change meaning.
+Currently the values from this select will be grouped by the field key. But were we to ever introduce some feature which would require the `COUNT` keyword after `GROUP` then this code will quietly change meaning.
 
 # 3. Proposal
 
