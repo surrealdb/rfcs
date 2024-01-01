@@ -196,6 +196,19 @@ COMMIT;
 ```
 Let's move on...
 
+Another problem with transactions is that they leak canceled state:
+```sql
+BEGIN;
+LET $phantom = CREATE foo;
+CANCEL;
+RETURN $phantom;
+# Result: [canceled, {foo}]
+```
+What is returned is a record that would have existed if the transaction was commited.
+While it may not have a significant impact,
+it would be more consistent that when the transaction is canceled,
+the changes to the query environment would be reversed along with the changes to the database.
+
 ## Recap
 So just to recap:
 - Current `RETURN` semantics don't allow for early returns.
@@ -205,3 +218,22 @@ So just to recap:
 **tl;dr: there are issues with `RETURN` semantics**
 
 # 3. Proposal
+## Early returns and block expressions
+First, in order to solve the issue with heavy nesting, returns should break execution all the way up to the current statement.
+In order to allow for blocks to return values, block expressions should be introduced.
+This means a new syntax, where the last statement in a block is returned if not suffixed with a semicolon.
+
+For example, the first example will now look like:
+```sql
+{
+  IF !$foo.id {
+    RETURN { Err: "NotFoo" };
+  };
+
+  IF !$bar.id {
+    RETURN { Err: "NotBar" };
+  };
+
+  { Ok: (SELECT bar[WHERE name = $bar.name] FROM ONLY $foo)}
+}
+```
