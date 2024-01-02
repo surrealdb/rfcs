@@ -368,6 +368,10 @@ Of course, the checks are still annoying.
 Some of the semantical errors I went over don't need drastic changes to be fixed (like the current state of implicit returns).
 However, the changes I propose will greatly improve the usability of the language.
 
+# 6. Unresolved Questions
+## Are there any conflicts that arise with inline syntax with queries?
+Answering this will require going through statements to make sure that there aren't any with exceptional semantics that would cause a regression.
+
 # Addendum
 Currently, SurrealQL lacks a lexer, instead using scannerless parsing.
 This likely has played a part in the semantical inconsistencies and bugs seen, since scannerless parsers are harder to debug.
